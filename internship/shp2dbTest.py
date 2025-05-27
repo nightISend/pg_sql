@@ -1,36 +1,36 @@
 import psycopg2 
 if __name__=="__main__":    
-    # postgre_connect = psycopg2.connect(
-    #     database="LSPT_DATA", 
-    #     user="postgres", 
-    #     password="Supermap.",
-    #     host="10.33.13.194",
-    #     port="5432")
     postgre_connect = psycopg2.connect(
-        database="supermap", 
+        database="LSPT_DATA", 
         user="postgres", 
-        password="Lvu123123",
-        host="localhost",
+        password="Supermap.",
+        host="10.33.13.194",
         port="5432")
+    # postgre_connect = psycopg2.connect(
+    #     database="test", 
+    #     user="postgres", 
+    #     password="Lvu123123",
+    #     host="localhost",
+    #     port="5432")
     cursor = postgre_connect.cursor()
 
     # 要建的表的名称
-    tableName="hpm"
+    tableName="ck"
 
     # 要建的表的中文名称，如“水库”、“断面”
-    tableZhName="湖泊面"
+    tableZhName="仓库"
 
     # shp表的名称
     shpTable=tableName
 
     # shp表里用来给code字段赋值的字段名
-    shpCode="code"
+    shpCode="gid"
 
     # shp表里用来给Name字段赋值的字段名
     shpName="name"
 
     # base表字段即对应注释 [["gid","gid注释"],["f1","f1注释"],["id","id注释"]]
-    columnNote=[["gid","gid"],["smuserid","社交平台用户ID"],["objectid","对象ID"],["name","名称"],["code","编码"],["city","城市"],["county","县区"],["masl","海拔高度（米）"],["mu","面积（亩）"],["town","乡镇"],["trntype","流向类型"],["bas","所属流域"],["landform","地形地貌"],["area","面积"],["averdep","平均深度"],["vol","容积/体积"],["function","功能用途"],["type","类型"],["remark","备注信息"],["shape_leng","形状长度"],["shape_area","形状面积"],["contdiff","内容差异说明"],["spcl","特殊属性"],["imp","重要性等级"],["lchief","负责人"],["cf","重复"],["zys","重要水"],["sfh","是否合"],["lx2022","类型2022"]]
+    columnNote=[["gid","gid"],["smuserid","sm用户id"],["depotname","仓库名称"],["depotperso","仓库人员"],["depotdetai","仓库人员"],["name","名称"],["lati","纬度"],["longi","经度"]]
 
     # geo表注释
     geoNote=f"{tableZhName}空间信息表"
@@ -43,6 +43,8 @@ if __name__=="__main__":
 
     """ 完整 """
     createTable=f'''
+            ALTER TABLE {tableName} ALTER COLUMN gid type VARCHAR;
+
             CREATE TABLE att_{tableName}_geo(
             smid serial,
             smuserid int4 default 0, --赋值0就行
@@ -56,6 +58,8 @@ if __name__=="__main__":
             version_id uuid default uuid_generate_v4(),
             PRIMARY KEY(version_id)
             );
+
+            ALTER TABLE att_{tableName}_geo ALTER COLUMN version_id type VARCHAR;
 
             INSERT INTO att_{tableName}_geo (obj_code,obj_name,center_x,center_y,smgeometry)
             select {shpCode} ,{shpName} ,ST_X(ST_Centroid(geom)),ST_Y(ST_Centroid(geom)),geom from {shpTable};

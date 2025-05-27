@@ -1,21 +1,21 @@
 import psycopg2 
 import pandas as pd
 if __name__=="__main__":    
-    # postgre_connect = psycopg2.connect(
-    #     database="LSPT_DATA", 
-    #     user="postgres", 
-    #     password="Supermap.",
-    #     host="10.33.13.194",
-    #     port="5432")
     postgre_connect = psycopg2.connect(
-        database="test", 
+        database="LSPT_DATA", 
         user="postgres", 
-        password="Lvu123123",
-        host="localhost",
+        password="Supermap.",
+        host="10.33.13.194",
         port="5432")
+    # postgre_connect = psycopg2.connect(
+    #     database="test", 
+    #     user="postgres", 
+    #     password="Lvu123123",
+    #     host="localhost",
+    #     port="5432")
     cursor = postgre_connect.cursor()
 
-    data=pd.read_excel("F:/实习/超图(钱管局)实习/shp2sql/shpInfo.xlsx",sheet_name="Sheet1",keep_default_na=False)
+    data=pd.read_excel("F:/实习/超图(钱管局)实习/shp2sql/QTJshpInfo - 副本.xlsx",sheet_name="Sheet1",keep_default_na=False)
     for index, row in data.iterrows():
 
         # 要建的表的名称
@@ -47,6 +47,8 @@ if __name__=="__main__":
 
         """ 完整 """
         createTable=f'''
+                    ALTER TABLE {tableName} ALTER COLUMN gid type VARCHAR;
+
                     CREATE TABLE att_{tableName}_geo(
                     smid serial,
                     smuserid int4 default 0, --赋值0就行
@@ -60,6 +62,8 @@ if __name__=="__main__":
                     version_id uuid default uuid_generate_v4(),
                     PRIMARY KEY(version_id)
                     );
+
+                    ALTER TABLE att_{tableName}_geo ALTER COLUMN version_id type VARCHAR;
 
                     INSERT INTO att_{tableName}_geo (obj_code,obj_name,center_x,center_y,smgeometry)
                     select {shpCode} ,{shpName} ,ST_X(ST_Centroid(geom)),ST_Y(ST_Centroid(geom)),geom from {shpTable};
