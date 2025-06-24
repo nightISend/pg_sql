@@ -10,7 +10,7 @@ if __name__=="__main__":
     port="5432")
     cursor = postgre_connect.cursor()
 
-    cursor.execute('select uplcz_xd,downlcz_xd,name,gid from hd_dth')
+    cursor.execute('select uplcz_xd,downlcz_xd,name,gid from hd_dth_zl_fix')
     datas=cursor.fetchall()
     static={}
     for data in datas:
@@ -35,9 +35,18 @@ if __name__=="__main__":
             static[id] = 0
         if static[id] != 0:
             id=id+'^'+str(static[id])
-        name=data[2]+'_'+id.split('_')[1]
+        name=''
+        if up[0]==down[0]:
+            name=data[2]+'_'+id.split('_')[1]
+        else:
+            name=id.replace("CSG","常山港")
+            name=name.replace("QJ","衢江")
+            name=name.replace("QTJHK","钱塘江")
+            name=name.replace("FCJ","富春江")
+            name=name.replace("QTJ","钱塘江")
+            name=name.replace("LJ","兰江")
         print(id,name,data[3])
-        cursor.execute(f"update hd_dth set hd_code='{id}',hd_name='{name}' where gid={data[3]}")
+        cursor.execute(f"update hd_dth_zl_fix set hd_code='{id}',hd_name='{name}' where gid={data[3]}")
         postgre_connect.commit()
     cursor.close()
     postgre_connect.close()
