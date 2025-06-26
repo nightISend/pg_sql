@@ -1,24 +1,24 @@
 import psycopg2 
 if __name__=="__main__":    
-    postgre_connect = psycopg2.connect(
-        database="LSPT_DATA", 
-        user="postgres", 
-        password="Supermap.",
-        host="10.33.13.194",
-        port="5432")
     # postgre_connect = psycopg2.connect(
-    #     database="test", 
+    #     database="LSPT_DATA", 
     #     user="postgres", 
-    #     password="Lvu123123",
-    #     host="localhost",
+    #     password="Supermap.",
+    #     host="10.33.13.194",
     #     port="5432")
+    postgre_connect = psycopg2.connect(
+        database="test", 
+        user="postgres", 
+        password="Lvu123123",
+        host="localhost",
+        port="5432")
     cursor = postgre_connect.cursor()
 
     # 要建的表的名称
-    tableName="ck"
+    tableName="xzj_4490"
 
     # 要建的表的中文名称，如“水库”、“断面”
-    tableZhName="仓库"
+    tableZhName="乡镇界"
 
     # shp表的名称
     shpTable=tableName
@@ -30,7 +30,7 @@ if __name__=="__main__":
     shpName="name"
 
     # base表字段即对应注释 [["gid","gid注释"],["f1","f1注释"],["id","id注释"]]
-    columnNote=[["gid","gid"],["smuserid","sm用户id"],["depotname","仓库名称"],["depotperso","仓库人员"],["depotdetai","仓库人员"],["name","名称"],["lati","纬度"],["longi","经度"]]
+    columnNote=[["gid", "gid"],["smuserid", "用户ID"], ["name", "名称"], ["county", "区县"], ["city", "城市"], ["remark", "备注"], ["shape_leng", "形状长度"]]
 
     # geo表注释
     geoNote=f"{tableZhName}空间信息表"
@@ -75,7 +75,7 @@ if __name__=="__main__":
 
             create table rel_{tableName}_ad as select {tableName}_code,att_{tableName}_geo.from_date,att_{tableName}_geo.version_id 
             from att_{tableName}_base join att_{tableName}_geo on att_{tableName}_geo.version_id = att_{tableName}_base.version_id;
-            ALTER TABLE rel_{tableName}_ad ADD COLUMN ad_code VARCHAR default '420102';
+            ALTER TABLE rel_{tableName}_ad ADD COLUMN ad_code VARCHAR default '330000';
 
             COMMENT ON COLUMN att_{tableName}_geo.smid IS '主键id';
             COMMENT ON COLUMN att_{tableName}_geo.smuserid IS 'sm用户id';

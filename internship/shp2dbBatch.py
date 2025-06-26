@@ -3,8 +3,8 @@ import pandas as pd
 if __name__=="__main__":    
     postgre_connect = psycopg2.connect(
         database="LSPT_DATA", 
-        user="postgres", 
-        password="Supermap.",
+        user="", 
+        password="",
         host="10.33.13.194",
         port="5432")
     # postgre_connect = psycopg2.connect(
@@ -15,7 +15,7 @@ if __name__=="__main__":
     #     port="5432")
     cursor = postgre_connect.cursor()
 
-    data=pd.read_excel("F:/实习/超图(钱管局)实习/shp2sql/QTJshpInfo - 副本.xlsx",sheet_name="Sheet1",keep_default_na=False)
+    data=pd.read_excel("F:/实习/超图(钱管局)实习/shp2sql/QTJshpInfo去重无ck.xlsx",sheet_name="Sheet1",keep_default_na=False)
     for index, row in data.iterrows():
 
         # 要建的表的名称
@@ -79,7 +79,7 @@ if __name__=="__main__":
 
                     create table rel_{tableName}_ad as select {tableName}_code,att_{tableName}_geo.from_date,att_{tableName}_geo.version_id 
                     from att_{tableName}_base join att_{tableName}_geo on att_{tableName}_geo.version_id = att_{tableName}_base.version_id;
-                    ALTER TABLE rel_{tableName}_ad ADD COLUMN ad_code VARCHAR default '420102';
+                    ALTER TABLE rel_{tableName}_ad ADD COLUMN ad_code VARCHAR default '330000';
 
                     COMMENT ON COLUMN att_{tableName}_geo.smid IS '主键id';
                     COMMENT ON COLUMN att_{tableName}_geo.smuserid IS 'sm用户id';

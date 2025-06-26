@@ -1,11 +1,12 @@
+# 将要执行的sql放在一个文件夹里，批量执行sql
 import psycopg2 
 import pandas as pd
 import os
 
 postgre_connect = psycopg2.connect(
     database="LSPT_DATA", 
-    user="postgres", 
-    password="Supermap.",
+    user="sysadmin", 
+    password="Supermap123!@#",
     host="10.33.13.194",
     port="5432")
 # postgre_connect = psycopg2.connect(
@@ -26,7 +27,7 @@ def traversal_files(path):
           files.append(item.path)
     return dirs,files
 # 修改路径为存放shp的文件夹
-dirs,files=traversal_files('F:\实习\超图(钱管局)实习\shp2sql\QTJshpSQL')
+dirs,files=traversal_files('F:\实习\超图(钱管局)实习\shp2sql\SYDCsql')
 
 for filepath in files: 
     try:
@@ -37,8 +38,10 @@ for filepath in files:
                     # 执行.sql脚本
                     cursor.execute(sql_script)
                     postgre_connect.commit()
+                    print("完成 ",filepath)
     except Exception as e:
         postgre_connect.commit()
         print(filepath.split("\\")[-1])
         print(e)
-print("shp建表完成")
+cursor.close()
+postgre_connect.close()
