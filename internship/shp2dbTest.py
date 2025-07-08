@@ -2,8 +2,8 @@ import psycopg2
 if __name__=="__main__":    
     # postgre_connect = psycopg2.connect(
     #     database="LSPT_DATA", 
-    #     user="postgres", 
-    #     password="Supermap.",
+    #     user="sysadmin", 
+    #     password="Supermap123!@#",
     #     host="10.33.13.194",
     #     port="5432")
     postgre_connect = psycopg2.connect(
@@ -15,10 +15,10 @@ if __name__=="__main__":
     cursor = postgre_connect.cursor()
 
     # 要建的表的名称
-    tableName="xzj_4490"
+    tableName="haitang"
 
     # 要建的表的中文名称，如“水库”、“断面”
-    tableZhName="乡镇界"
+    tableZhName="海塘"
 
     # shp表的名称
     shpTable=tableName
@@ -29,9 +29,29 @@ if __name__=="__main__":
     # shp表里用来给Name字段赋值的字段名
     shpName="name"
 
-    # base表字段即对应注释 [["gid","gid注释"],["f1","f1注释"],["id","id注释"]]
-    columnNote=[["gid", "gid"],["smuserid", "用户ID"], ["name", "名称"], ["county", "区县"], ["city", "城市"], ["remark", "备注"], ["shape_leng", "形状长度"]]
-
+    # base表字段即对应注释 [["f1","f1注释"],["id","id注释"]]，不要gid
+    columnNote=[
+    ["name", "名称"],
+    ["color", "颜色"],
+    ["remark", "备注"],
+    ["bm", "bm"],
+    ["fcode", "fcode"],
+    ["id", "id"],
+    ["ab", "ab"],
+    ["qqzh", "qqzh"],
+    ["featuregui", "featuregui"],
+    ["updatestat", "更新状态"],
+    ["objectid", "对象id"],
+    ["is_sparsed", "是否稀疏"],
+    ["bnds", "边界"],
+    ["management", "管理"],
+    ["return_per", "回报率"],
+    ["swle", "swle"],
+    ["administra", "行政管理"],
+    ["watershed", "流域"],
+    ["region", "区域"],
+    ["region_cod", "区域代码"]
+]
     # geo表注释
     geoNote=f"{tableZhName}空间信息表"
 
@@ -69,6 +89,7 @@ if __name__=="__main__":
             create table att_{tableName}_base as select * from table_temp join {shpTable} on table_temp.{tableName}_code={shpTable}.{shpCode}
             join (select obj_code,from_date,version_id from att_{tableName}_geo ) geo_temp on geo_temp.obj_code={shpTable}.{shpCode};
 
+            ALTER TABLE att_{tableName}_base DROP COLUMN gid;
             ALTER TABLE att_{tableName}_base DROP COLUMN geom;
             ALTER TABLE att_{tableName}_base DROP COLUMN obj_code;
             DROP TABLE IF EXISTS table_temp;
@@ -111,9 +132,9 @@ if __name__=="__main__":
         cursor.execute(insertNote)
         postgre_connect.commit()
     
-    dropSQL=f" DROP TABLE IF EXISTS table_temp;DROP TABLE IF EXISTS {shpTable};"
-    cursor.execute(dropSQL)
-    postgre_connect.commit()
+    # dropSQL=f"DROP TABLE IF EXISTS table_temp;DROP TABLE IF EXISTS {shpTable};"
+    # cursor.execute(dropSQL)
+    # postgre_connect.commit()
 
     cursor.close()
     postgre_connect.close()
