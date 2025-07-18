@@ -1,6 +1,8 @@
 import pandas as pd
 if __name__=="__main__":
-    data=pd.read_excel("F:/实习/超图(钱管局)实习/shp2sql/SYDCshpInfo去重.xlsx",sheet_name="Sheet1",keep_default_na=False)
+    infoExcel_path='F:/实习/超图(钱管局)实习/测站数据/入库.xlsx'
+    out_path='F:/实习/超图(钱管局)实习/测站数据/rksql'
+    data=pd.read_excel(infoExcel_path,sheet_name="Sheet1",keep_default_na=False)
     for index, row in data.iterrows():
 
         # 要建的表的名称
@@ -30,7 +32,10 @@ if __name__=="__main__":
         # base表字段即对应注释 [["gid","gid注释"],["f1","f1注释"],["id","id注释"]]
         columnNote=row['注释'][1:-1]
 
-        with open(f'F:\实习\超图(钱管局)实习\shp2sql\SYDCsql\{tableName}.sql', 'w',encoding="utf-8") as f:
+        # element_type
+        element_type=row['element_type']
+
+        with open(f'{out_path}/{tableName}.sql', 'w',encoding="utf-8") as f:
             """ 完整 """
             createTable=f'''
 ALTER TABLE {tableName} ALTER COLUMN gid type VARCHAR;
@@ -43,7 +48,7 @@ obj_code varchar(255),
 obj_name varchar(255),
 center_x float8,
 center_y float8,
-element_type varchar(255),
+element_type varchar(255) default '{element_type}',
 from_date timestamp default now(),
 version_id uuid default uuid_generate_v4(),
 PRIMARY KEY(version_id)
@@ -62,6 +67,9 @@ join (select obj_code,from_date,version_id from att_{tableName}_geo ) geo_temp o
 ALTER TABLE att_{tableName}_base DROP COLUMN geom;
 ALTER TABLE att_{tableName}_base DROP COLUMN obj_code;
 DROP TABLE IF EXISTS table_temp;
+
+ALTER TABLE att_{tableName}_base DROP COLUMN IF EXISTS gid;
+ALTER TABLE att_{tableName}_base DROP COLUMN IF EXISTS smuserid;
 
 create table rel_{tableName}_ad as select {tableName}_code,att_{tableName}_geo.from_date,att_{tableName}_geo.version_id 
 from att_{tableName}_base join att_{tableName}_geo on att_{tableName}_geo.version_id = att_{tableName}_base.version_id;
@@ -95,7 +103,7 @@ comment on table rel_{tableName}_ad is '{connNote}';
             f.write(createTable)
 
             # 给base表的属性字段添加注释
-            columnNot=columnNote.replace('[','').replace(']','').replace('"','').split(',')
+            columnNot=columnNote.replace('[','').replace(']','').replace('"','').replace(' ','').split(',')
             columnNotResult=[]
             i=0
             for num in range(0,len(columnNot),2):
@@ -108,3 +116,4 @@ comment on table rel_{tableName}_ad is '{connNote}';
             dropSQL=f" DROP TABLE IF EXISTS table_temp;DROP TABLE IF EXISTS {shpTable};"
             f.write(dropSQL)
             print(f"{tableName}表创建完毕")
+            break
