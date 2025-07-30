@@ -35,7 +35,7 @@ if __name__=="__main__":
         # element_type
         element_type=row['element_type']
 
-        with open(f'{out_path}/{tableName}.sql', 'w',encoding="utf-8") as f:
+        with open(f'{out_path}/{tableName}_rk.sql', 'w',encoding="utf-8") as f:
             """ 完整 """
             createTable=f'''
 ALTER TABLE {tableName} ALTER COLUMN gid type VARCHAR;
