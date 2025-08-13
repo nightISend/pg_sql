@@ -1,4 +1,8 @@
-""" excel点数据配合表信息json入库 """
+"""
+excel点数据配合表信息json入库,
+修改文件路径
+入库前先改creatInsertSQL里坐标获取,修改用于显示的nameInList变量
+"""
 import psycopg2
 import pandas as pd
 import requests
@@ -59,8 +63,10 @@ def creatInsertSQL(attributes,datas,tableName):
                     value2table="'"+str(value2table)+"'"
 
             valueStr=valueStr+f"{value2table},"
-        x=row['地理位置经度坐标']
-        y=row['地理位置纬度坐标']
+
+        """ 入库前根据excel选择坐标字段 """
+        x=row['经度']
+        y=row['纬度']
         # 坐标错误跳过该记录
         if x=='' or y==''or float(x)>180 or float(x)<-180 or float(y)>90 or float(y)<-90:
             continue
@@ -96,19 +102,17 @@ if __name__=="__main__":
     #     port="5432")
     cursor = postgre_connect.cursor()
 
-    excel_path='F:/实习/超图(钱管局)实习/接口数据入库/excel/泵站基础信息.xlsx'
-    res_path='F:/实习/超图(钱管局)实习/接口数据入库/fileinfo/泵站基础信息.json'
-    table_data=pd.read_excel(excel_path,sheet_name='泵站基础信息数据',keep_default_na=False)
+    excel_path='F:/实习/超图(钱管局)实习/接口数据入库/excel/病险水库信息.xlsx'
+    res_path='F:/实习/超图(钱管局)实习/接口数据入库/fileinfo/病险水库信息.json'
+    table_data=pd.read_excel(excel_path,sheet_name='病险水库信息数据',keep_default_na=False)
 
     # 用于列表显示的字段，英文，人工设置
-    nameInList='pust_name'
+    nameInList='name'
 
     # 属性中英文及类型,代码获取
     attributes=None
     table_CN_Name=''
     table_EN_Name=''
-    # 作为名称显示的字段
-    name2Show=''
 
     with open(res_path, 'r', encoding='utf-8') as file:
         data = json.load(file)
