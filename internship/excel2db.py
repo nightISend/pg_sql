@@ -116,14 +116,14 @@ if __name__=="__main__":
         table_EN_Name=data['data']['tableNameEn']
         attributes=getAttribute(data['data']['fieldList'])
 
-    #     createTableSQL=creatShpSQL(attributes,table_EN_Name)
-    #     cursor.execute(createTableSQL)
-    #     postgre_connect.commit()
-    #     print(f"建{table_EN_Name}成功")
-    # result=creatInsertSQL(attributes,table_data,table_EN_Name)
-    # cursor.execute(result)
-    # postgre_connect.commit()
-    # print("插入成功")
+        createTableSQL=creatShpSQL(attributes,table_EN_Name)
+        cursor.execute(createTableSQL)
+        postgre_connect.commit()
+        print(f"建{table_EN_Name}成功")
+    result=creatInsertSQL(attributes,table_data,table_EN_Name)
+    cursor.execute(result)
+    postgre_connect.commit()
+    print("插入成功")
 
 
     tableName=table_EN_Name
@@ -193,7 +193,9 @@ if __name__=="__main__":
     for key, value in attributes.items():
         noteSQL=f"COMMENT ON COLUMN att_{tableName}_base.{key} IS '{value['name']}';\n"
         rkSQL=rkSQL+noteSQL
+    rkSQL=rkSQL+f"DROP TABLE IF EXISTS table_temp;DROP TABLE IF EXISTS {tableName};"
     cursor.execute(rkSQL)
     postgre_connect.commit()
+    print('入库完成')
     cursor.close()
     postgre_connect.close()
